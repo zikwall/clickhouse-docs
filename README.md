@@ -30,11 +30,11 @@
 ## STRUCTURE OF FILES
 
 1. [MAIN](#file-readme-md)
-2. [Distributed Table](#file-distributed-sql)
-3. [Materialized View](#file-mv-sql)
-4. [Queue Table (Kafka ENGINE)](#file-queue-sql)
-5. [Stat Table (Merge Tree, Replicated Merge Tree)](#file-stat-sql)
-6. [GoLang Data Generator](#file-generate_data-go)
+2. [Distributed Table](https://github.com/zikwall/clickhouse-docs/blob/master/src/sql/distributed.sql)
+3. [Materialized View](https://github.com/zikwall/clickhouse-docs/blob/master/src/sql/mv.sql)
+4. [Queue Table (Kafka ENGINE)](https://github.com/zikwall/clickhouse-docs/blob/master/src/sql/queue.sql)
+5. [Stat Table (Merge Tree, Replicated Merge Tree)](https://github.com/zikwall/clickhouse-docs/blob/master/src/sql/stat.sql)
+6. [GoLang Data Generator](https://github.com/zikwall/clickhouse-docs/blob/master/src/generator.go)
 
 ***
 ## <a name="clickhouse"></a>ClickHouse
