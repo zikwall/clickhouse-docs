@@ -16,6 +16,7 @@
     2. [Configuration](#kafka-configuration)
     3. [Systemd and run](#kafka-start)
     4. [Kafka command line starter pack](#kafka-getting-starter)
+    5. [Create Kafka Topics in 3 Easy Steps](#kafka-create-topic-three-steep)
 3. [Zookeeper](#zookeeper)
     1. [Before installation proccess](#zookeeper-before-installation)
     2. [Installation](#zookeeper-installation)
@@ -26,6 +27,7 @@
     2. [SetUp Distributed server](#cluster-distributed)
     3. [Testing data](#cluster-testing)
 5. [Import from MySQL to ClickHouse](#clikchouse-import-mysql)
+6. [Rsyslog && Nginx](#rsyslog-nginx)
 
 ## STRUCTURE OF FILES
 
@@ -149,6 +151,46 @@
 4. **Delete topic:** `bin/kafka-topics.sh --zookeeper localhost:2181 --delete --topic myTopicName`
 5. **Get topic list:** `bin/kafka-topics.sh --list  --zookeeper localhost:2181`
 6. **Get count messages of topic:** `bin/kafka-run-class.sh kafka.tools.GetOffsetShell --broker-list localhost:9092 --topic statopic001 --time -1`
+
+### <a name="kafka-create-topic-three-steep"></a>Create Kafka Topics in 3 Easy Steps
+
+![Image of](https://github.com/zikwall/clickhouse-docs/blob/master/img/Read.webp)
+
+Creating a topic in production is an operative task that requires awareness and preparation. In this tutorial, we’ll explain all the parameters to consider when creating a new topic in production.
+
+Setting the partition count and replication factor is required when creating a new Topic and the following choices affect the performance and reliability of your system.
+
+**Create a topic**
+```
+kafka/bin/kafka-topics.sh --create \
+--zookeeper localhost:2181 \
+--replication-factor 2 \
+--partitions 3 \
+--topic unique-topic-name
+```
+
+**PARTITIONS**
+Kafka topics are divided into a number of partitions, which contains messages in an unchangeable sequence. Each message in a partition is assigned and identified by its unique offset.
+
+Partitions allow us to split the data of a topic across multiple brokers balance the load between brokers. Each partition can be consumed by only one consumer group, so the parallelism of your service is bound by the number of partition the topic has.
+
+The number of partitions is affected by two main factors, the number of messages and the avg size of each message. In case the volume is high you will need to use the number of brokers as a multiplier, to allow the load to be shared on all consumers and avoid creating a hot partition which will cause a high load on a specific broker. We aim to keep partition throughput up to 1MB per second.
+
+Set Number of Partitions
+
+`--partitions [number]`
+
+**REPLICAS**
+![Image of](https://github.com/zikwall/clickhouse-docs/blob/master/img/Read.webp)
+
+Kafka optionally replicates topic partitions in case the leader partition fails and the follower replica is needed to replace it and become the leader. When configuring a topic, recall that partitions are designed for fast read and write speeds, scalability, and for distributing large amounts of data. The replication factor (RF), on the other hand, is designed to ensure a specified target of fault-tolerance. Replicas do not directly affect performance since at any given time, only one leader partition is responsible for handling producers and consumer requests via broker servers.
+
+Another consideration when deciding the replication factor is the number of consumers that your service needs in order to meet the production volume.
+
+**Set Replication Factor (RF)**
+In case your topic is using keys, consider using RF 3 otherwise, 2 should be sufficient.
+
+`--replication-factor [number]`
 
 ***
 ## <a name="zookeeper"></a>Zookeeper
@@ -280,3 +322,19 @@ This error can be resolved immediately by specifying the password in the command
 **Export from MySQL to TSV**: `mysql -Bse "select all_fields_here from db_name.table_name_here" > table.tsv -h hostname -u username -p`
 
 **Export from MySQL table (as CSV) AND INSERT TO Click House Table:** `mysql -u username  -p --compress -ss -e "SELECT all_fields_here FROM db_name.table_name" test | sed 's/\"//g;s/\t/","/g;s/^/"/;s/$/"/' | clickhouse-client --query="INSERT INTO first_base.table_name FORMAT TSV" -h hostname`
+
+## <a name="rsyslog-nginx"></a>Rsyslog & Nginx
+
+Setup action: /etc/rsyslog.d/default.conf
+
+```
+local6.*  action(type="omprog" binary="/path/to/hadnler/(php), (go), (peyhton)")
+```
+
+Nginx setup: /etc/nginx/sites-available/your-service.conf
+
+```
+access_log syslog:server={ip:port},facility=local6 example_name_here;
+```
+
+Example PHP Handler @see: [Here](https://github.com/zikwall/clickhouse-docs/blob/master/src/php_handler.php)
