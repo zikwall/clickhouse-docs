@@ -1,2 +1,2 @@
-*.php linguist-language=SQL
+*.php linguist-detectable=false
 *.sql linguist-detectable=true
