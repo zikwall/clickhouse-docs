@@ -9,7 +9,8 @@ require_once ("/var/www/monit/log/vendor/autoload.php");
 use Kafka\ProducerConfig;
 use Kafka\Producer;
 
-function decode_code($code){
+function decode_code($code)
+{
     return preg_replace_callback(
         "(\\\\x([0-9a-f]{2}))i",
         function ($a) {return chr(hexdec($a[1]));},
@@ -65,7 +66,8 @@ function getItems($fullStr)
     ]);
 }
 
-function isJson($string) {
+function isJson($string)
+{
     $json = json_decode($string, true);
     return json_last_error() == JSON_ERROR_NONE && !empty($json);
 }
