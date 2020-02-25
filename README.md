@@ -13,9 +13,9 @@ This manual uses specific, working examples, the general concept of which:
 
 Clients --> Events --> (Nginx + Rsyslog) --> Golang middleware --> Apache Kafka
 
-                 | <-- Shard 0  \
---> Apache Kafka | <-- Shard I   | --- Distributed Server <-- Analyst
-                 | <-- Shard II /
+                 | <---> Shard O  \
+--> Apache Kafka | <---> Shard I   | <---> Distributed Server <---> Analyst
+                 | <---> Shard II /
 
 ```
 
