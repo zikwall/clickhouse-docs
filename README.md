@@ -4,6 +4,33 @@
 ###### _Recommended Blog: [Geek Notes - Roman Bogachev](https://bogachev.biz)_ 
 ###### _Great presentation on CH: [Introduction to the Mysteries of ClickHouse Replication, By Robert Hodges and Altinity Engineering Team](https://www.slideshare.net/Altinity/introduction-to-the-mysteries-of-clickhouse-replication-by-robert-hodges-and-altinity-engineering-team)_
 
+
+### README
+
+This manual uses specific, working examples, the general concept of which:
+
+```css
+
+Clients --> Events --> (Nginx + Rsyslog) --> Golang middleware --> Apache Kafka
+
+                 | <-- Shard 0  \
+--> Apache Kafka | <-- Shard I   | --- Distributed Server <-- Analyst
+                 | <-- Shard II /
+
+```
+
+#### Replicated concept
+
+```css
+
+--> Apache Kafka 
+        --> CH Kafka Engine Table 
+            --> Main Consummer (Materialized View) --> Main Storage Table
+                                                    \..>  First Aggregate MV --> ReplicatedSumminMergeTree
+                                                     \..> Second Aggregate MV --> ReplicatedAggregatingMergeTree
+
+```
+
 ## TABLE OF CONTENTS
 
 1. [ClickHouse](#clickhouse)
